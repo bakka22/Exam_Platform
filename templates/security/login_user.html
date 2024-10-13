@@ -1,0 +1,36 @@
+{% block content %}
+<div class="flex flex-col min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="w-full max-w-md space-y-8">
+    {% set messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="w-full my-6">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Sign in to your account</h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Or
+        <a href="{{ url_for('register') }}" class="font-medium text-indigo-600 hover:text-indigo-500">sign up instead?</a>
+      </p>
+    </div>
+    <form action="{{ url_for_security('login') }}" method="POST" class="mt-8 space-y-6">
+      {{ login_user_form.hidden_tag() }}
+      {{ render_signup_login_field_w_errors(login_user_form.email, placeholder="Email", autocomplete="email") }}
+      {{ render_signup_login_field_w_errors(login_user_form.password, placeholder="Password", autocomplete="current-password") }}
+      {{ render_checkbox_with_errors(login_user_form.remember) }}
+    
+      <div>
+        <button
+          type="submit"
+          class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Sign in
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

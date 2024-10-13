@@ -1,0 +1,29 @@
+{% macro render_checkbox_with_errors(field) %}
+  <div class="relative flex items-start">
+    <div class="flex items-center h-5">
+    {{ field(class_="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded", **kwargs)|safe }}
+    </div>
+    <div class="ml-3 text-sm">
+    {{ field.label(class_="text-gray-700") }}</div>
+    {% if field.errors %}
+      <ul>
+      {% for error in field.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro render_signup_login_field_w_errors(field, class_) %}
+  <p class="{{ class_ }}">
+    {{ field.label(class_="sr-only") }} {{ field(class_="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm", **kwargs)|safe }}
+    {% if field.errors %}
+      <ul>
+      {% for error in field.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  </p>
+{% endmacro %}
