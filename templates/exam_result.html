@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <input id="exam_id" type="hidden" value="{{ exam_id }}">
+    <div id="exam_info"></div>
+    <div id="result"></div>
+    <script src="{{ url_for('static', filename='js/exam_result.js') }}"></script>
+{% endblock %}

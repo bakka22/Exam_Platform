@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask with jQuery</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- <script src="{{ url_for('static', filename='js/add_exam.js') }}"></script> -->
+</head>
+<body>
+    <h1>Flask with jQuery</h1>
+    <input type="hidden" id="examiner" name="examiner" value="{{ current_user.first_name + ' ' + current_user.last_name }}">
+    <div id="form-container"></div>
+    <script src="{{ url_for('static', filename='js/add_exam.js') }}"></script>
+</body>
+</html>

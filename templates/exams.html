@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div>Your Exams: <br>
+    <ul>
+        {% for exam in current_user.exams %}
+            <li><a href="{{ url_for('exam_result', exam_id=exam.id) }}">{{ exam.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

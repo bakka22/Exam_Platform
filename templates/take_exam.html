@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask with jQuery</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/take_exam.js') }}"></script>
+</head>
+<body>
+    <input id="exam_id" type="hidden" value="{{ exam_id }}">
+    <h1>Flask with jQuery</h1>
+    <button id="fetch-data">Fetch Data</button>
+    <div id="questions"></div>
+    <div id="result"></div>
+</body>
+</html>
