@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """ flask app """
-from flask import Flask, render_template, redirect, url_for, request
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, redirect, url_for, request, abort, jsonify
 from flask_security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required, current_user
+from models.user import User, Role
+from models.exam import Exam
+from db import db
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -11,30 +13,10 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'mysecret'
-#app.config['SECURITY_REGISTERABLE'] = True
 app.config['SECURITY_PASSWORD_SALT'] = 'mysalt'
 
-# Initialize the database
-db = SQLAlchemy(app)
-
-# Define the Role and User models
-class Role(db.Model, RoleMixin):
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer(), primary_key=True)
-    username = db.Column(db.String(150), unique=True)
-    email = db.Column(db.String(150), unique=True)
-    password = db.Column(db.String(255))
-    fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
-    active = db.Column(db.Boolean(), default=True)
-    roles = db.relationship('Role', secondary='user_roles')
-
-class UserRoles(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
-    role_id = db.Column(db.Integer(), db.ForeignKey('role.id'))
+#initialize the database with flask app
+db.init_app(app)
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -43,10 +25,12 @@ security = Security(app, user_datastore)
 @app.route('/')
 @login_required
 def home():
+    print(current_user.type)
     return render_template('home.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print("custom login")
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -63,14 +47,78 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
         email = request.form['email']
         password = request.form['password']
-        user = user_datastore.create_user(username=username, email=email, password=password)
+        student_id = request.form['student_id']
+        user = user_datastore.create_user(first_name=first_name, last_name=last_name, email=email, password=password, student_id=student_id, type='Student')
         db.session.commit()
         return redirect(url_for('login'))
 
     return render_template('register.html')
+
+@app.route('/add_exam', methods=['GET', 'POST'], strict_slashes=False)
+@login_required
+def add_exam():
+    if request.method == 'POST':
+        exam_name = request.form['exam_name']
+        examiner = request.form['examiner']
+        number_of_questions = request.form['number_of_questions']
+        exam = Exam(name=exam_name, examiner=examiner,
+            question_count=number_of_questions)
+        db.session.add(exam)
+        db.session.commit()
+        print(number_of_questions)
+        for i in range(int(number_of_questions)):
+            content = request.form[f'content{i}']
+            print(request.form[f'choices{i}'])
+            choices = request.form[f'choices{i}'].split('|;|;')[:-1]
+            print(choices)
+            time_limit = request.form[f'time_limit{i}']
+            correct_answer = int(request.form[f'correct{i}'])
+            print(correct_answer)
+            exam.add_question(content, choices, time_limit, correct_answer, i)
+        return redirect(url_for('home'))
+    return render_template('add_exam.html', current_user=current_user)
+
+@app.route('/take_exam/<exam_id>', methods=['GET', 'POST'], strict_slashes=False)
+@login_required
+def take_exam(exam_id):
+    if current_user.exam_is_taken(exam_id):
+        return redirect(url_for('home'))
+    if request.method == 'POST':
+        exam = Exam.query.filter_by(id=exam_id).first()
+        answers = request.form['answers'].split("|;|;")[:-1]
+        answers = ['0' if x == 'undefined' else x for x in answers]
+        score = exam.calculate_score(answers)
+        print(score)
+        current_user.add_grade_of_exam(exam.id, score, answers)
+        return redirect(url_for('home'))
+    return render_template('take_exam.html', exam_id=exam_id)
+
+@app.route('/get_exam/<exam_id>')
+def get_exam(exam_id):
+    exam = Exam.query.filter_by(id=exam_id).first()
+    print(exam.Question)
+    return jsonify(exam.to_dict())
+
+@app.route('/get_exam_result/<exam_id>', methods=["GET"], strict_slashes=False)
+@login_required
+def get_exam_result(exam_id):
+    if not exam_id:
+        return jsonify({"message": "no data"})
+    return jsonify(current_user.get_exam_result(exam_id))
+
+@app.route('/exams', methods=["GET"], strict_slashes=False)
+@login_required
+def exams():
+    return render_template('exams.html')
+
+@app.route('/exams/<exam_id>', methods=["GET"], strict_slashes=False)
+@login_required
+def exam_result(exam_id):
+    return render_template('exam_result.html', exam_id=exam_id)
 
 if __name__ == '__main__':
     with app.app_context():  # Create the application context
