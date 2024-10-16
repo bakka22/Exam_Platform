@@ -70,7 +70,8 @@ class User(db.Model, UserMixin):
             score = existing_entry.score
             answers = existing_entry.answers
             print(existing_entry)
-            return {"score": score, "answers":answers, "name": self.first_name}
+            correct_answers = Exam.query.filter_by(id=exam_id).first().answers
+            return {"score": score, "answers":answers, "name": self.first_name, "correct_answers": correct_answers}
         else:
             return {"message": "no data found"}
 

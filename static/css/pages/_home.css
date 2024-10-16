@@ -1,0 +1,5 @@
+/* Home page specific styles */
+.home-header {
+    font-size: var(--font-size-large);
+    margin-bottom: 1em;
+}

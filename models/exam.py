@@ -1,6 +1,7 @@
 from db import db
 from flask_security import AsaList
 from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy import JSON
 
 
 user_exam_association = db.Table('user_exam',
@@ -18,6 +19,8 @@ class Exam(db.Model):
     Question = db.relationship('Question', back_populates='exam', lazy=True)
     question_count = db.Column(db.Integer())
     user = db.relationship('User', secondary=user_exam_association)
+    answers = db.Column('answers', MutableList.as_mutable(JSON))
+    is_accessable = db.Column(db.Boolean, default=True)
 
     def add_question(self, content, choices, time_limit, correct_answer, order):
         question = Question(
@@ -40,15 +43,20 @@ class Exam(db.Model):
     
     def calculate_score(self, answers):
         score = 0
-        print(self.Question)
-        questions = []
-        for question in self.Question:
-            questions.append(question)
         for idx, answer in enumerate(answers):
-            question = questions[idx]
-            if question.correct_answer == int(answer):
+            if int(self.answers[idx]) == int(answer):
                 score += 1
         return score
+    
+    def delete_questions(self):
+        questions = Question.query.filter_by(exam_id=self.id).all()
+        for question in questions:
+            db.session.delete(question)
+        db.session.commit()
+
+    @staticmethod
+    def delete_all():
+        db.session.query(Exam).delete()
 
 
 

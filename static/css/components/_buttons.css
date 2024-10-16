@@ -1,0 +1,12 @@
+/* Button styles */
+.btn {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 0.5em 1em;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--secondary-color);
+}

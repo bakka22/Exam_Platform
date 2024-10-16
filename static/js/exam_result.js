@@ -31,10 +31,21 @@ $(document).ready(function() {
                             answerCounter = 1;
                             for (let choice of question.choices){
                                 let choices;
+                                let cls = 'wrong';
+                                if (response.answers[i] == response.correct_answers[i]) {
+                                    cls = 'correct';
+                                }
                                 if (answerCounter === +response.answers[i]) {
-                                    choices = $(`<lable><input type="radio" disabled checked>${choice}</lable><br>`);
+                                    choices = $(`<lable class="${cls}"><input type="radio" disabled checked>${choice}</lable><br>`);
                                 } else {
-                                    choices = $(`<lable><input type="radio" disabled>${choice}</lable><br>`);
+                                    if (cls == "wrong") {
+                                        if (answerCounter === +response.correct_answers[i]) {
+                                            choices = $(`<lable class="correct"><input type="radio" disabled>${choice}</lable><br>`);
+                                        }
+                                    }
+                                    else{
+                                        choices = $(`<lable><input type="radio" disabled>${choice}</lable><br>`);
+                                    }
                                 }
                                 $('#result').append(choices)
                                 console.log("answercounter ", + answerCounter);

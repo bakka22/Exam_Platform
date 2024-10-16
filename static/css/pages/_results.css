@@ -1,0 +1,13 @@
+/* Results page specific styles */
+.results {
+    font-size: var(--font-size-large);
+    color: var(--secondary-color);
+}
+
+.correct {
+    color: green;
+}
+
+.wrong {
+    color: red;
+}

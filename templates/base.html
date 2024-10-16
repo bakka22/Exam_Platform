@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Flask User App{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <nav>
+    <header>
         {% if current_user.is_authenticated %}
             <a href="{{ url_for('home') }}">Home</a>
             <a href="{{ url_for('security.logout') }}">Logout</a>
+            <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Header Image" class="header_image">
             {% if current_user.type == 'Student' %}
                 <a href="{{ url_for('exams') }}">Exams</a>
             {% endif %}
@@ -18,8 +20,8 @@
             <a href="{{ url_for('security.login') }}">Login</a>  <!-- Updated -->
             <a href="{{ url_for('register') }}">Register</a>
         {% endif %}
-    </nav>
-    <div>
+    </header>
+    <div class="content">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul>

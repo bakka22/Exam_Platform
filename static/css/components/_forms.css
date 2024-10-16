@@ -1,0 +1,25 @@
+/* Form styles */
+form {
+    padding-left: 20px;
+}
+
+input, textarea {
+    padding: 0.5em;
+    margin: 0.5em 0;
+    border: 1px solid #ccc;
+}
+
+input {
+    background-color: transparent; /* Makes the background transparent */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Light border for contrast */
+    color: #333; /* Text color */
+    padding: 10px; /* Add some padding for comfort */
+    border-radius: 5px; /* Optional: rounded corners */
+    outline: none; /* Remove default focus outline */
+    transition: border-color 0.3s ease; /* Smooth transition for border color */
+    border-width: 2px;
+}
+
+input:focus {
+    border-color: #5DBE4D; /* Change border color on focus */
+}

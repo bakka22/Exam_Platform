@@ -6,5 +6,8 @@ from db import db
 from sqlalchemy import update
 
 with app.app_context():
-    resutl = Exam.query.all()
-    print(resutl)
+    result = Exam.query.filter_by(id=2).first()
+    print(result.is_accessable)
+    result.is_accessable = True
+    print(result.is_accessable)
+    db.session.commit()

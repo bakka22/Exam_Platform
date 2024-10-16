@@ -5,8 +5,11 @@ $(document).ready(function(event) {
     //-------------- create form --------------
     const form = $('<form method="POST" class="exam-score-form" id="questions"></form>');
     form.on('submit', function () {
+        const number_of_questions = `<input type="hidden" name="number_of_questions" value="${questionCount}">`;
+        form.append($(number_of_questions));
         for (let j = 0; j < questionCount; j++){
             let choice = '';
+            console.log(choicesCounter[j]);
             for (let x = 0; x <= choicesCounter[j]; x++){
                 choice += $(`#choices${j}-${x}`).val() + '|;|;';
             }
@@ -18,6 +21,12 @@ $(document).ready(function(event) {
         }
     });
 
+    //-----------add hidden inputs---------------
+    const exam_name = `<label>Exam name<input type="text" name="exam_name" value="pedo"></label>`;
+    // const examiner = `<input type="hidden" name="examiner" value="maha">`;
+    form.append($(exam_name));
+    form.append($('#examiner'));
+    const questions = $('<div id="questions"></div>');
     //--------------- add questions --------------
     function addQuestion(i) {
         var choiceNumber = choicesCounter[i];
@@ -25,7 +34,7 @@ $(document).ready(function(event) {
         let content = $(`<h6>Content</h6> <input value="fsdfs" type="text" name="content${i}" required>`);
         let choices  = $(`<div id="choices${i}"></div>`);
         let choice = `<input value="fadsfds" type="text" placeholder="Choice${choiceNumber}" id="choices${i}-${choiceNumber}" required >`;
-        let correctAnswer = `<input type="radio" name="correct${i}" value="${choiceNumber + 1}" required><br>`
+        let correctAnswer = `<input type="radio" name="correct${i}" value="${choiceNumber + 1}" required><br>`;
         let time_limit = $(`<h6>time_limit</h6> <input value="4" type="text" name="time_limit${i}" required>`);
         let add_choice = $(`<button type="button" id="button${i}">Add Choice</button>`);
 
@@ -48,7 +57,7 @@ $(document).ready(function(event) {
             $(choices).append($(newCorrectAnswer));
 
         });
-        form.append(question);
+        questions.append(question);
         questionCount++;
     }
 
@@ -58,15 +67,18 @@ $(document).ready(function(event) {
     }
 
 
-    //-----------add hidden inputs---------------
-    const exam_name = `<input type="text" name="exam_name" value="pedo">`;
-    // const examiner = `<input type="hidden" name="examiner" value="maha">`;
-    const number_of_questions = `<input type="hidden" name="number_of_questions" value="${questionCount}">`;
-    form.append($(exam_name + number_of_questions));
-    form.append($('#examiner'));
 
     //-------------Append the submit button to the form--------------
+    form.append(questions);
+    const add_question = $('<button>Add Question</button>');
+    add_question.click(function (event) {
+        event.preventDefault();
+        choicesCounter[i] = 0;
+        addQuestion(i);
+        i++;
+    });
     const submit = '<button type="submit">Submit</button>';
+    form.append(add_question);
     form.append(submit);
     
     //---------------Add the form to the container----------------

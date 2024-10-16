@@ -62,6 +62,7 @@ def register():
 @login_required
 def add_exam():
     if request.method == 'POST':
+        correct_answers = []
         exam_name = request.form['exam_name']
         examiner = request.form['examiner']
         number_of_questions = request.form['number_of_questions']
@@ -77,18 +78,46 @@ def add_exam():
             print(choices)
             time_limit = request.form[f'time_limit{i}']
             correct_answer = int(request.form[f'correct{i}'])
+            correct_answers.append(str(correct_answer))
             print(correct_answer)
             exam.add_question(content, choices, time_limit, correct_answer, i)
+        exam.answers = correct_answers
+        db.session.commit()
+        print(exam.answers)
         return redirect(url_for('home'))
     return render_template('add_exam.html', current_user=current_user)
+
+@app.route('/edit_exam/<exam_id>', methods=['GET', 'POST'], strict_slashes=False)
+@login_required
+def edit_exam(exam_id):
+    correct_answers = []
+    exam = Exam.query.filter_by(id=exam_id).first()
+    if request.method == 'POST':
+        exam.delete_questions()
+        number_of_questions = request.form['number_of_questions']
+        exam.question_count = number_of_questions
+        for i in range(int(number_of_questions)):
+            content = request.form[f'content{i}']
+            print(request.form[f'choices{i}'])
+            choices = request.form[f'choices{i}'].split('|;|;')[:-1]
+            print(choices)
+            time_limit = request.form[f'time_limit{i}']
+            correct_answer = int(request.form[f'correct{i}'])
+            correct_answers.append(correct_answer)
+            print(correct_answer)
+            exam.add_question(content, choices, time_limit, correct_answer, i)
+        exam.answers = correct_answers
+        db.session.commit()
+        return redirect(url_for('home'))
+    return render_template('edit_exam.html', exam_id=exam_id)
 
 @app.route('/take_exam/<exam_id>', methods=['GET', 'POST'], strict_slashes=False)
 @login_required
 def take_exam(exam_id):
-    if current_user.exam_is_taken(exam_id):
+    exam = Exam.query.filter_by(id=exam_id).first()
+    if current_user.exam_is_taken(exam_id) or not exam.is_accessable:
         return redirect(url_for('home'))
     if request.method == 'POST':
-        exam = Exam.query.filter_by(id=exam_id).first()
         answers = request.form['answers'].split("|;|;")[:-1]
         answers = ['0' if x == 'undefined' else x for x in answers]
         score = exam.calculate_score(answers)
@@ -110,6 +139,13 @@ def get_exam_result(exam_id):
         return jsonify({"message": "no data"})
     return jsonify(current_user.get_exam_result(exam_id))
 
+@app.route('/get_exam_answers/<exam_id>', methods=["GET"], strict_slashes=False)
+@login_required
+def get_exam_answers(exam_id):
+    exam = Exam.query.filter_by(id=exam_id).first()
+    print(exam.answers)
+    return jsonify(exam.answers)
+
 @app.route('/exams', methods=["GET"], strict_slashes=False)
 @login_required
 def exams():
@@ -119,6 +155,12 @@ def exams():
 @login_required
 def exam_result(exam_id):
     return render_template('exam_result.html', exam_id=exam_id)
+
+@app.route('/delete_all', methods=['GET'], strict_slashes=False)
+@login_required
+def delete_all():
+    Exam.delete_all()
+    return redirect(url_for('home'))
 
 if __name__ == '__main__':
     with app.app_context():  # Create the application context

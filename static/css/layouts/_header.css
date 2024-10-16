@@ -1,0 +1,41 @@
+
+
+header {
+    background: linear-gradient(135deg, #070e05, #307c23,  #070e05); /* Metallic gradient */
+    color: #fff;
+    padding: 1em;
+    width: 100%;
+    position: sticky;
+    z-index: 1000; /* Ensure it's on top of other elements */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Light border for shine */
+    transition: background 0.3s ease; /* Smooth transitions for background */
+}
+
+/* header:hover {
+    background: linear-gradient(135deg, #5DBE4D, #4B8B3B, #3E6B30);
+} */
+
+header h1 {
+    font-size: var(--font-size-large);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Soft text shadow for depth */
+}
+
+header a {
+    color: #fff; /* Change the text color */
+    text-decoration: none; /* Remove underline */
+    padding: 10px; /* Add padding for spacing */
+}
+
+.header_image {
+    width: 120px;
+    height: 85px;
+    border-radius: 50%;
+    /* object-fit: cover; */
+    position: absolute;
+    left: calc(50% - 60px);
+    top: 30%;
+    background-color: var(--primary-color);
+    /* border: 10px solid var(--primary-color); */
+}
+
