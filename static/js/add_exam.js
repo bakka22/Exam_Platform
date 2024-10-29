@@ -14,12 +14,15 @@ $(document).ready(function(event) {
     //--------------- add existing questions --------------
     function addExistingQuestion(i, contentValue, choicesValues, correctAnswersValues) {
         var choiceNumber = 0;
+        var calcIdx = i;
         let question = $(`<div id="question${i}"><h4>Question ${i + 1}</h4></div>`);
+        let deleteQuestion = $('<button>Delete Question</button>');
         let content = $(`<h6>Content</h6> <input value="${contentValue}" type="text" name="content${i}" required>`);
         let choices  = $(`<div id="choices${i}"></div>`);
         let time_limit = $(`<h6>time_limit</h6> <input value="4" type="text" name="time_limit${i}" required>`);
         let add_choice = $(`<button type="button" id="button${i}">Add Choice</button>`);
         // Append inputs to the question div
+        question.append(deleteQuestion);
         question.append(time_limit);
         question.append(content);
         question.append('<h6>Choices</h6>');
@@ -50,7 +53,48 @@ $(document).ready(function(event) {
             $(choices).append($(newCorrectAnswer));
         });
         questions.append(question);
-        questionCount++;
+        deleteQuestion.click(function (event) {
+            event.preventDefault();
+            questionCount--;
+            let collectorIdx = calcIdx + 1;
+            let contents = [];
+            let choicesList = [];
+            let correctAnswersList = [];
+            j = 0;
+            for (; collectorIdx <= questionCount; collectorIdx++) {
+                console.log('collectorIdx: ', collectorIdx);
+                console.log('j: ', j);
+                console.log($(`#choices0-1`).val());
+                contents.push($(`#content${collectorIdx}`).val() || "");
+                console.log(contents[j]);
+                let questionChoices = [];
+                let x = 0;
+                console.log(`choices${collectorIdx}: `, $(`#choices${collectorIdx}`).length);
+                for (; x <= choicesCounter[collectorIdx]; x++) {
+                    questionChoices.push($(`#choices${collectorIdx}-${x}`).val() || "");
+                    console.log(`choices${collectorIdx}-${x}`, $(`#choices${collectorIdx}-${x}`).val());
+                }
+                choicesList.push(questionChoices);
+                correctAnswersList[j] = $(`#correct${collectorIdx}`).val();
+                console.log(correctAnswersList[j]);
+                j++;
+            }
+            collectorIdx = calcIdx;
+            for (; collectorIdx <= questionCount; collectorIdx++) {
+                deleteElement(event, $(`#question${collectorIdx}`));
+            }
+            j = 0;
+            collectorIdx = calcIdx;
+            console.log(questionCount, collectorIdx);
+            for (; collectorIdx < questionCount; collectorIdx++) {
+                console.log(`${collectorIdx}/${questionCount}`);
+                console.log('one iter');
+                console.log(`choicesList ${j}`, choicesList[j]);
+                choicesCounter[collectorIdx] = -1;
+                addExistingQuestion(collectorIdx, contents[j], choicesList[j], correctAnswersList[j]);
+                j++;
+            }
+        });
     }
 
     //-------------- create form --------------
@@ -126,38 +170,46 @@ $(document).ready(function(event) {
         questionCount++;
         deleteQuestion.click(function (event) {
             event.preventDefault();
-            // i--;
             questionCount--;
-            // let collectorIdx = calcIdx;
-            // let contents = [];
-            // let choicesList = [];
-            // let correctAnswersList = [];
-            // j = 0;
-            // for (; collectorIdx < i; collectorIdx++) {
-            //     console.log('collectorIdx: ', collectorIdx);
-            //     console.log('j: ', j);
-            //     console.log($(`#choices0-1`).val());
-            //     contents[j] = $(`#content${collectorIdx}`).val();
-            //     console.log(contents[j]);
-            //     let questionChoices = [];
-            //     let x = 0;
-            //     console.log(`choices${collectorIdx}: `, $(`#choices${collectorIdx}`).length);
-            //     for (; x <= $(`#choices${collectorIdx}`).length; x++) {
-            //         questionChoices[x] = $(`#choices${collectorIdx}-${x}`).val();
-            //     }
-            //     choicesList[j] = questionChoices;
-            //     console.log('choicesList', choicesList[j]);
-            //     correctAnswersList[j] = $(`#correct${collectorIdx}`).val();
-            //     console.log(correctAnswersList[j]);
-            //     j++;
-            // }
-            // collectorIdx = calcIdx;
-            deleteElement(event, question);
-
-            // for (j = calcIdx; j <= i; j++) {
-            //     choicesCounter[j] = 0;
-            //     addExistingQuestion(j, contents[j], choicesList[j], correctAnswersList[j]);
-            // }
+            let collectorIdx = calcIdx + 1;
+            let contents = [];
+            let choicesList = [];
+            let correctAnswersList = [];
+            j = 0;
+            for (; collectorIdx <= questionCount; collectorIdx++) {
+                console.log('collectorIdx: ', collectorIdx);
+                console.log('j: ', j);
+                console.log($(`#choices0-1`).val());
+                contents.push($(`#content${collectorIdx}`).val() || "");
+                console.log(contents[j]);
+                let questionChoices = [];
+                let x = 0;
+                console.log(`choices${collectorIdx}: `, $(`#choices${collectorIdx}`).length);
+                for (; x <= choicesCounter[collectorIdx]; x++) {
+                    questionChoices.push($(`#choices${collectorIdx}-${x}`).val() || "");
+                    console.log(`choices${collectorIdx}-${x}`, $(`#choices${collectorIdx}-${x}`).val());
+                }
+                choicesList.push(questionChoices);
+                correctAnswersList.push($(`#correct${collectorIdx}`).val());
+                console.log('correct:', $(`#correct${collectorIdx}`).val());
+                console.log(correctAnswersList[j]);
+                j++;
+            }
+            collectorIdx = calcIdx;
+            for (; collectorIdx <= questionCount; collectorIdx++) {
+                deleteElement(event, $(`#question${collectorIdx}`));
+            }
+            j = 0;
+            collectorIdx = calcIdx;
+            console.log(questionCount, collectorIdx);
+            for (; collectorIdx < questionCount; collectorIdx++) {
+                console.log(`${collectorIdx}/${questionCount}`);
+                console.log('one iter');
+                console.log(`choicesList ${j}`, choicesList[j]);
+                choicesCounter[collectorIdx] = -1;
+                addExistingQuestion(collectorIdx, contents[j], choicesList[j], correctAnswersList[j]);
+                j++;
+            }
         });
     }
 
@@ -173,9 +225,8 @@ $(document).ready(function(event) {
     const add_question = $('<button>Add Question</button>');
     add_question.click(function (event) {
         event.preventDefault();
-        choicesCounter[i] = 0;
-        addQuestion(i);
-        i++;
+        choicesCounter[questionCount] = 0;
+        addQuestion(questionCount);
     });
     const submit = '<button type="submit">Submit</button>';
     form.append(add_question);
