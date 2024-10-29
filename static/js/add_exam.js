@@ -1,7 +1,58 @@
 $(document).ready(function(event) {
-    let questionCount = 0;
-    let i = 0;
+    var questionCount = 0;
+    var i = 0;
     choicesCounter = {0: 0, 1: 0, 2: 0}
+    function deleteElement(event, ...elements) {
+        event.preventDefault();
+        elements.forEach(element => {
+            if (element) {
+                element.remove();
+            }
+        });
+    }
+
+    //--------------- add existing questions --------------
+    function addExistingQuestion(i, contentValue, choicesValues, correctAnswersValues) {
+        var choiceNumber = 0;
+        let question = $(`<div id="question${i}"><h4>Question ${i + 1}</h4></div>`);
+        let content = $(`<h6>Content</h6> <input value="${contentValue}" type="text" name="content${i}" required>`);
+        let choices  = $(`<div id="choices${i}"></div>`);
+        let time_limit = $(`<h6>time_limit</h6> <input value="4" type="text" name="time_limit${i}" required>`);
+        let add_choice = $(`<button type="button" id="button${i}">Add Choice</button>`);
+        // Append inputs to the question div
+        question.append(time_limit);
+        question.append(content);
+        question.append('<h6>Choices</h6>');
+        console.log('choiceNumber:', choiceNumber);
+        for (; choiceNumber < choicesValues.length; choiceNumber++) {
+            let choice = `<input value="${choicesValues[choiceNumber]}" type="text" id="choices${i}-${choiceNumber}" required >`;
+            let correctAnswer;
+            if (choiceNumber + 1 === +correctAnswersValues) {
+                correctAnswer = `<input type="radio" name="correct${i}" value="${choiceNumber + 1}" required checked><br>`;
+            } else {
+                correctAnswer = `<input type="radio" name="correct${i}" value="${choiceNumber + 1}" required><br>`;
+            }
+            choices.append($(choice));
+            choices.append($(correctAnswer));
+            console.log(`before add to ${i}` + choicesCounter[i]);
+            choicesCounter[i] += 1;
+        }
+        question.append(choices);
+        question.append(add_choice);
+        add_choice.click(function(event) {
+            choicesCounter[i] += 1;
+            let chn = choicesCounter[i]
+            event.preventDefault();
+            const newChoice = `<input value="dasd" type="text" placeholder="Choice${chn}" id="choices${i}-${chn}" required>`;
+            const newCorrectAnswer = `<input type="radio" name="correct${i}" value="${chn + 1}" required><br>`
+            console.log(`choices${i}-${chn}`);
+            $(choices).append($(newChoice));
+            $(choices).append($(newCorrectAnswer));
+        });
+        questions.append(question);
+        questionCount++;
+    }
+
     //-------------- create form --------------
     const form = $('<form method="POST" class="exam-score-form" id="questions"></form>');
     form.on('submit', function () {
@@ -22,7 +73,7 @@ $(document).ready(function(event) {
     });
 
     //-----------add hidden inputs---------------
-    const exam_name = `<label>Exam name<input type="text" name="exam_name" value="pedo"></label>`;
+    const exam_name = `<label>Exam name<input type="text" name="exam_name"></label>`;
     // const examiner = `<input type="hidden" name="examiner" value="maha">`;
     form.append($(exam_name));
     form.append($('#examiner'));
@@ -30,35 +81,84 @@ $(document).ready(function(event) {
     //--------------- add questions --------------
     function addQuestion(i) {
         var choiceNumber = choicesCounter[i];
-        let question = $(`<div id="question${i}"><h4>Question ${i + 1}</h4></div>`);
-        let content = $(`<h6>Content</h6> <input value="fsdfs" type="text" name="content${i}" required>`);
+        var question = $(`<div id="question${i}"><h4>Question ${i + 1}</h4></div>`);
+        var calcIdx = i;
+        console.log(question.text());
+        let deleteQuestion = $('<button>Delete Question</button>');
+        let content = $(`<h6>Content</h6> <input type="text" name="content${i}" id="content${i}" required>`);
         let choices  = $(`<div id="choices${i}"></div>`);
-        let choice = `<input value="fadsfds" type="text" placeholder="Choice${choiceNumber}" id="choices${i}-${choiceNumber}" required >`;
-        let correctAnswer = `<input type="radio" name="correct${i}" value="${choiceNumber + 1}" required><br>`;
-        let time_limit = $(`<h6>time_limit</h6> <input value="4" type="text" name="time_limit${i}" required>`);
+        let choice = $(`<input type="text" placeholder="Choice${choiceNumber}" id="choices${i}-${choiceNumber}" required >`);
+        let correctAnswer = $(`<input type="radio" name="correct${i}" value="${choiceNumber + 1}" required>`);
+        let deleteChoice = $('<button>Delete Choice</button><br>');
+        let time_limit = $(`<h6>time_limit</h6> <input type="text" name="time_limit${i}" required>`);
         let add_choice = $(`<button type="button" id="button${i}">Add Choice</button>`);
-
+        deleteChoice.click(function (event) {
+            deleteElement(event, choice, correctAnswer, deleteChoice);
+            choicesCounter[i]--;
+        });
         // Append inputs to the question div
+        question.append(deleteQuestion);
         question.append(time_limit);
         question.append(content);
         question.append('<h6>Choices</h6>');
         choices.append($(choice));
         choices.append($(correctAnswer));
+        choices.append(deleteChoice);
         question.append(choices);
         question.append(add_choice);
         add_choice.click(function(event) {
             choicesCounter[i] += 1;
-            let chn = choicesCounter[i]
+            let chn = choicesCounter[i];
             event.preventDefault();
-            const newChoice = `<input value="dasd" type="text" placeholder="Choice${chn}" id="choices${i}-${chn}" required>`;
-            const newCorrectAnswer = `<input type="radio" name="correct${i}" value="${chn + 1}" required><br>`
+            const newChoice = $(`<input type="text" placeholder="Choice${chn + 1}" id="choices${i}-${chn}" required>`);
+            const newCorrectAnswer = $(`<input type="radio" name="correct${i}" value="${chn + 1}" required>`);
+            let deleteChoice2 = $('<button>Delete Choice</button><br>');
+            deleteChoice2.click(function (event) {
+                deleteElement(event, newChoice, newCorrectAnswer, deleteChoice2);
+                choicesCounter[i]--;
+            });
             console.log(`choices${i}-${chn}`);
             $(choices).append($(newChoice));
             $(choices).append($(newCorrectAnswer));
-
+            $(choices).append($(deleteChoice2));
         });
         questions.append(question);
         questionCount++;
+        deleteQuestion.click(function (event) {
+            event.preventDefault();
+            // i--;
+            questionCount--;
+            // let collectorIdx = calcIdx;
+            // let contents = [];
+            // let choicesList = [];
+            // let correctAnswersList = [];
+            // j = 0;
+            // for (; collectorIdx < i; collectorIdx++) {
+            //     console.log('collectorIdx: ', collectorIdx);
+            //     console.log('j: ', j);
+            //     console.log($(`#choices0-1`).val());
+            //     contents[j] = $(`#content${collectorIdx}`).val();
+            //     console.log(contents[j]);
+            //     let questionChoices = [];
+            //     let x = 0;
+            //     console.log(`choices${collectorIdx}: `, $(`#choices${collectorIdx}`).length);
+            //     for (; x <= $(`#choices${collectorIdx}`).length; x++) {
+            //         questionChoices[x] = $(`#choices${collectorIdx}-${x}`).val();
+            //     }
+            //     choicesList[j] = questionChoices;
+            //     console.log('choicesList', choicesList[j]);
+            //     correctAnswersList[j] = $(`#correct${collectorIdx}`).val();
+            //     console.log(correctAnswersList[j]);
+            //     j++;
+            // }
+            // collectorIdx = calcIdx;
+            deleteElement(event, question);
+
+            // for (j = calcIdx; j <= i; j++) {
+            //     choicesCounter[j] = 0;
+            //     addExistingQuestion(j, contents[j], choicesList[j], correctAnswersList[j]);
+            // }
+        });
     }
 
     //-------------Generate 3 questions--------------

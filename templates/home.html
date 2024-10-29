@@ -3,8 +3,22 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<h2>Welcome home, {{ current_user.username }}!</h2>
-<h2>Your id is {{ current_user.student_id }}</h2>
-<p>This is the home page.</p>
+{% if current_user.type == "Student" %}
+    <h2>Welcome, {{ current_user.first_name }}!</h2>
+    {% if filterd_exams %}
+    <div>Exams to take: <br>
+        <ul>
+            {% for exam in filterd_exams %}
+                <li><a href="{{ url_for('take_exam', exam_id=exam.id) }}">{{ exam.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+        <p>Nothing for now, enjoy the silence</p>
+    {% endif %}
+{% endif %}
+{% if current_user.type == 'Examiner' %}
+<h2>Welcome, Dr. {{ current_user.last_name }}!</h2>
+{% endif %}
 {% endblock %}
 

@@ -26,7 +26,11 @@ security = Security(app, user_datastore)
 @login_required
 def home():
     print(current_user.type)
-    return render_template('home.html')
+    exams = Exam.query.all()
+    filterd_exams = [exam for exam in exams if not current_user.exam_is_taken(exam.id)]
+    if len(filterd_exams) == 0:
+        filterd_exams = None
+    return render_template('home.html', filterd_exams=filterd_exams)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -149,7 +153,11 @@ def get_exam_answers(exam_id):
 @app.route('/exams', methods=["GET"], strict_slashes=False)
 @login_required
 def exams():
-    return render_template('exams.html')
+    exams = Exam.query.all()
+    filterd_exams = [exam for exam in exams if not current_user.exam_is_taken(exam.id)]
+    if len(filterd_exams) == 0:
+        filterd_exams = None
+    return render_template('exams.html', filterd_exams=filterd_exams)
 
 @app.route('/exams/<exam_id>', methods=["GET"], strict_slashes=False)
 @login_required

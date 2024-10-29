@@ -4,6 +4,13 @@
     color: var(--secondary-color);
 }
 
+#exam_info, #result, #result * {
+    padding-left: 10px;
+}
+
+input[type="radio"] :checked {
+    color: black;
+}
 .correct {
     color: green;
 }

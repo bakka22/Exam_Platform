@@ -3,11 +3,28 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div>Your Exams: <br>
+<div>Exams to take: <br>
     <ul>
-        {% for exam in current_user.exams %}
-            <li><a href="{{ url_for('exam_result', exam_id=exam.id) }}">{{ exam.name }}</a></li>
-        {% endfor %}
+        {% if filterd_exams %}
+            {% for exam in filterd_exams %}
+                <li><a href="{{ url_for('take_exam', exam_id=exam.id) }}">{{ exam.name }}</a></li>
+            {% endfor %}
+        {% else %}
+            <p>None</p>
+        {% endif %}
     </ul>
 </div>
+<br>
+<div>previous Exams: <br>
+    <ul>
+        {% if current_user.exams %}
+            {% for exam in current_user.exams %}
+                <li><a href="{{ url_for('exam_result', exam_id=exam.id) }}">{{ exam.name }}</a></li>
+            {% endfor %}
+        {% else %}
+            <p>None</p>
+        {% endif %}
+    </ul>
+</div>
+
 {% endblock %}

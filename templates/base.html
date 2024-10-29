@@ -16,9 +16,14 @@
             {% if current_user.type == 'Student' %}
                 <a href="{{ url_for('exams') }}">Exams</a>
             {% endif %}
+
+            {% if current_user.type == 'Examiner' %}
+                <a href="{{ url_for('add_exam') }}">Add exam</a>
+            {% endif %}
         {% else %}
             <a href="{{ url_for('security.login') }}">Login</a>  <!-- Updated -->
             <a href="{{ url_for('register') }}">Register</a>
+            <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Header Image" class="header_image">
         {% endif %}
     </header>
     <div class="content">

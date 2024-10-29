@@ -41,14 +41,16 @@ $(document).ready(function() {
                                     if (cls == "wrong") {
                                         if (answerCounter === +response.correct_answers[i]) {
                                             choices = $(`<lable class="correct"><input type="radio" disabled>${choice}</lable><br>`);
+                                        } else {
+                                            choices = $(`<lable><input type="radio" disabled>${choice}</lable><br>`);
                                         }
-                                    }
+                                    } 
                                     else{
                                         choices = $(`<lable><input type="radio" disabled>${choice}</lable><br>`);
                                     }
                                 }
                                 $('#result').append(choices)
-                                console.log("answercounter ", + answerCounter);
+                                console.log("answercounter ", +answerCounter);
                                 answerCounter++;
                             }
                         }
