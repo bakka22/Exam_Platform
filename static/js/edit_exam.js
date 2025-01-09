@@ -37,10 +37,13 @@ $(document).ready(function () {
                     const questions = $('<div id="questions"></div>');
 
                     //--------------- add existing questions --------------
-                    function addExistingQuestion(i) {
+                    function addExistingQuestion(i, contentValue, choicesValues) {
                         var choiceNumber = 0;
+                        let con = response.questions[i].content || contentValue;
+                        let choival = choicesValues || response.questions[i].choices;
+                        let choinum = choicesValues.length || +response.questions[i].number_of_choices;
                         let question = $(`<div id="question${i}"><h4>Question ${i + 1}</h4></div>`);
-                        let content = $(`<h6>Content</h6> <input value="${response.questions[i].content}" type="text" name="content${i}" required>`);
+                        let content = $(`<h6>Content</h6> <input value="${con}" type="text" name="content${i}" required>`);
                         let choices  = $(`<div id="choices${i}"></div>`);
                         let time_limit = $(`<h6>time_limit</h6> <input value="4" type="text" name="time_limit${i}" required>`);
                         let add_choice = $(`<button type="button" id="button${i}">Add Choice</button>`);
@@ -50,11 +53,13 @@ $(document).ready(function () {
                         question.append('<h6>Choices</h6>');
                         console.log('number of choices', response.questions[i].number_of_choices);
                         console.log('choiceNumber:', choiceNumber);
-                        for (; choiceNumber < +response.questions[i].number_of_choices; choiceNumber++) {
-                            let choice = `<input value="${response.questions[i].choices[choiceNumber]}" type="text" id="choices${i}-${choiceNumber}" required >`;
+                        for (; choiceNumber < choinum; choiceNumber++) {
+                            let choice = `<input value="${choival[choiceNumber]}" type="text" id="choices${i}-${choiceNumber}" required >`;
                             let correctAnswer;
-                            if (choiceNumber + 1 === +correct_answers[i]) {
-                                correctAnswer = `<input type="radio" name="correct${i}" value="${choiceNumber + 1}" required checked><br>`;
+                            if (choicesValues) {
+                                if (choiceNumber + 1 === +correct_answers[i]) {
+                                    correctAnswer = `<input type="radio" name="correct${i}" value="${choiceNumber + 1}" required checked><br>`;
+                                }
                             } else {
                                 correctAnswer = `<input type="radio" name="correct${i}" value="${choiceNumber + 1}" required><br>`;
                             }
