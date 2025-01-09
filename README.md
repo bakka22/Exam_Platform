@@ -42,4 +42,6 @@ See All features in the project landing page:
 
 https://bakka22.github.io/Exam_Platform/
 
+Inspiration:
 
+This project was inspired by my personal experience. I was in my final year at university when the war in Sudan began on October 14th, 2023. As a result, many people, including myself, were displaced, making it challenging for the university to conduct exams for students scattered across different countries. This situation led to the development of the online exam platform idea.
